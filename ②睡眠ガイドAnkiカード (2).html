@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>睡眠ガイド② フラッシュカード</title>
+ <style>
+ body {
+ font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+ background-color: #f7f9fc;
+ color: #333333;
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ padding: 20px;
+ margin: 0;
+ }
+
+ h1 {
+ font-size: 1.5rem;
+ color: #2c3e50;
+ margin-bottom: 10px;
+ }
+
+ .header-stats {
+ display: flex;
+ justify-content: space-between;
+ width: 100%;
+ max-width: 600px;
+ margin-bottom: 15px;
+ font-size: 1.1rem;
+ font-weight: bold;
+ color: #555;
+ padding: 0 10px;
+ }
+
+ .top-controls {
+ display: flex;
+ flex-wrap: wrap;
+ justify-content: center;
+ gap: 8px;
+ width: 100%;
+ max-width: 600px;
+ margin-bottom: 20px;
+ }
+
+ .top-btn {
+ flex: 1;
+ min-width: 130px;
+ padding: 10px 12px;
+ font-size: 0.95rem;
+ border: none;
+ border-radius: 8px;
+ cursor: pointer;
+ font-weight: bold;
+ color: white;
+ transition: background-color 0.2s, transform 0.1s;
+ box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+ }
+
+ .top-btn:active { transform: scale(0.98); }
+ 
+ .btn-all { background-color: #7f8c8d; }
+ .btn-all:hover { background-color: #6c7a7d; }
+ .btn-unanswered { background-color: #3498db; }
+ .btn-unanswered:hover { background-color: #2980b9; }
+ .btn-review { background-color: #e67e22; }
+ .btn-review:hover { background-color: #d35400; }
+ .btn-incorrect { background-color: #9b59b6; }
+ .btn-incorrect:hover { background-color: #8e44ad; }
+
+ .mode-indicator {
+ font-size: 0.9rem;
+ color: #e67e22;
+ font-weight: bold;
+ margin-bottom: 10px;
+ }
+
+ #flashcard {
+ background-color: #ffffff;
+ width: 100%;
+ max-width: 600px;
+ min-height: 400px;
+ border-radius: 16px;
+ box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+ display: flex;
+ flex-direction: column;
+ justify-content: center;
+ align-items: center;
+ padding: 30px;
+ box-sizing: border-box;
+ text-align: center;
+ position: relative;
+ }
+
+ #front-side, #back-side {
+ width: 100%;
+ display: flex;
+ flex-direction: column;
+ justify-content: center;
+ align-items: center;
+ }
+ 
+ #back-side {
+ display: none;
+ text-align: left;
+ align-items: flex-start;
+ }
+
+ .date-badge {
+ font-size: 0.85rem;
+ background-color: #edf2f7;
+ color: #4a5568;
+ padding: 6px 14px;
+ border-radius: 20px;
+ margin-bottom: 5px;
+ font-weight: bold;
+ display: inline-block;
+ }
+
+ .srs-badge {
+ font-size: 0.8rem;
+ color: #e67e22;
+ margin-bottom: 20px;
+ font-weight: bold;
+ }
+
+ .english-text {
+ font-size: 1.4rem;
+ font-weight: bold;
+ color: #1a1a1a;
+ margin-bottom: 25px;
+ line-height: 1.4;
+ text-align: center;
+ }
+
+ .english-text-back {
+ font-size: 1.2rem;
+ font-weight: bold;
+ color: #34495e;
+ margin-bottom: 15px;
+ line-height: 1.4;
+ text-align: left;
+ width: 100%;
+ border-bottom: 2px dashed #e1e8ed;
+ padding-bottom: 15px;
+ }
+
+ .japanese-text {
+ font-size: 1.2rem;
+ font-weight: bold;
+ color: #2c3e50;
+ margin-bottom: 20px;
+ line-height: 1.6;
+ width: 100%;
+ border-bottom: 2px solid #e1e8ed;
+ padding-bottom: 15px;
+ }
+
+ .note-box {
+ background-color: #fff9e6;
+ border-left: 4px solid #f5a623;
+ padding: 15px;
+ border-radius: 4px;
+ font-size: 1rem;
+ line-height: 1.6;
+ color: #5c4716;
+ width: 100%;
+ box-sizing: border-box;
+ }
+
+ #play-audio-btn {
+ font-size: 1.1rem;
+ padding: 12px 24px;
+ border-radius: 30px;
+ background-color: #4a90e2;
+ color: white;
+ border: none;
+ cursor: pointer;
+ box-shadow: 0 4px 8px rgba(74, 144, 226, 0.3);
+ transition: transform 0.1s, background-color 0.2s;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ gap: 8px;
+ font-weight: bold;
+ }
+
+ #play-audio-btn:active {
+ transform: scale(0.95);
+ background-color: #357abd;
+ }
+
+ .controls {
+ display: flex;
+ gap: 10px;
+ margin-top: 30px;
+ width: 100%;
+ max-width: 600px;
+ justify-content: center;
+ }
+
+ .action-btn {
+ flex: 1;
+ padding: 15px 10px;
+ font-size: 1rem;
+ border: none;
+ border-radius: 8px;
+ cursor: pointer;
+ font-weight: bold;
+ transition: background-color 0.2s, opacity 0.2s;
+ }
+
+ #prev-btn { background-color: #e2e8f0; color: #4a5568; }
+ #flip-btn { background-color: #4a90e2; color: white; }
+ #next-btn { background-color: #e2e8f0; color: #4a5568; }
+
+ .eval-btn {
+ flex: 1;
+ padding: 15px 5px;
+ font-size: 1rem;
+ border: none;
+ border-radius: 8px;
+ cursor: pointer;
+ font-weight: bold;
+ color: white;
+ }
+
+ #back-to-front-btn { background-color: #95a5a6; }
+ #back-to-front-btn:hover { background-color: #7f8c8d; }
+ #wrong-btn { background-color: #e74c3c; }
+ #wrong-btn:hover { background-color: #c0392b; }
+ 
+ #correct-btn { background-color: #2ecc71; }
+ #correct-btn:hover { background-color: #27ae60; }
+
+ .empty-state {
+ font-size: 1.5rem;
+ color: #2ecc71;
+ font-weight: bold;
+ text-align: center;
+ line-height: 1.5;
+ }
+ </style>
+</head>
+<body>
+
+ <h1>🎧 睡眠ガイド②</h1>
+
+ <div class="header-stats">
+ <span id="progress-text">1 / 1</span>
+ <span id="score-text">正解数: 0</span>
+ </div>
+ 
+ <div class="mode-indicator" id="mode-indicator">現在のモード：📁 全問</div>
+
+ <div class="top-controls">
+ <button class="top-btn btn-all" onclick="setMode('all')">📁 全問</button>
+ <button class="top-btn btn-unanswered" onclick="jumpToUnanswered()">🆕 未回答へジャンプ</button>
+ <button class="top-btn btn-review" onclick="setMode('review')">📅 今日の復習</button>
+ <button class="top-btn btn-incorrect" onclick="setMode('incorrect')">🎯 未正解</button>
+ </div>
+
+ <div id="flashcard">
+ <div id="front-side">
+ <div class="date-badge" id="date-badge">最終回答日：未回答</div>
+ <div class="srs-badge" id="srs-badge"></div>
+ <div class="english-text" id="front-eng-content"></div>
+ <button id="play-audio-btn">🔊 音声を聴く</button>
+ </div>
+
+ <div id="back-side">
+ <div class="english-text-back" id="back-eng-content"></div>
+ <div class="japanese-text" id="jap-content"></div>
+ <div class="note-box" id="note-content"></div>
+ </div>
+ </div>
+
+ <div class="controls" id="controls-front">
+ <button id="prev-btn" class="action-btn" onclick="prevCard()">◀ 前へ</button>
+ <button id="flip-btn" class="action-btn" onclick="flipCard()">🔄 裏返す</button>
+ <button id="next-btn" class="action-btn" onclick="nextCard()">次へ ▶</button>
+ </div>
+
+ <div class="controls" id="controls-back" style="display: none;">
+ <button id="back-to-front-btn" class="eval-btn" onclick="returnToFront()">🔙 表面に戻る</button>
+ <button id="wrong-btn" class="eval-btn" onclick="markIncorrect()">❌ 覚えてない</button>
+ <button id="correct-btn" class="eval-btn" onclick="markCorrect()">◯ 完璧！</button>
+ </div>
+
+ <script>
+ const cardsData = [
+ {"en": "Are your devices keeping you up at night?", "jp": "あなたのデバイスは、夜あなたを寝かせないようにしていますか？（スマホのせいで夜更かししていませんか？）[cite: 3]", "note": "keep [someone] up は「（人を）寝かせない、起こしておく」という日常・ウェルネスの超頻出表現。例えば \"My neighbors' noise kept me up all night.\"（隣人の騒音で一晩中眠れなかった）のように使えます。[cite: 3]"},
+ {"en": "How do those glowing screens and vibrating phones", "jp": "あの光る画面やバイブレーションする電話は、どのようにして、[cite: 3]", "note": ""},
+ {"en": "manage to jangle your brain and make your mind too busy to sleep?", "jp": "あなたの脳をピリピリと苛立たせ、心を忙しくさせて眠れなくしてしまっているのでしょうか？[cite: 3]", "note": "manage to [verb] は<span>「何とか〜する、首尾よく〜し遂げる」（そこそこ困難なことをなんとかやってのけるニュアンス）。jangle は「（神経などを）いらだたせる、ピリピリさせる」「金属がジャンジャン耳障りに鳴る」。too busy to sleep は、中級必須の too... to... 構文（〜すぎて…できない）で、「眠るには忙しすぎる＝忙しすぎて眠れない」という意味になります。[cite: 3]"},
+ {"en": "When the lights finally go out, does your mind turn on?", "jp": "（部屋の）明かりがようやく消えたとき、あなたの頭（心）はオンになりますか？（部屋を暗くした途端に、あれこれ考え始めていませんか？）[cite: 3]", "note": "明かりが消える（go out）と、心がオンになる（turn on）の鮮やかな対比表現。turn on は「（スイッチなどが）入る、起動する」。[cite: 3]"},
+ {"en": "In this episode,", "jp": "このエピソードでは、[cite: 3]", "note": ""},
+ {"en": "we'll take a look at what happens to our minds and bodies when we just can't quit our devices,", "jp": "私たちがデバイスをどうしてもやめられないとき、私たちの心と体に何が起きているのかを見ていきます。[cite: 3]", "note": "take a look at は「〜を見る、調べる」。quit は「（習慣や仕事、使用などを）きっぱりやめる、断つ」。[cite: 3]"},
+ {"en": "and we'll help you develop a wiser, more mindful approach to sleep", "jp": "そして、より賢く、よりマインドフルな睡眠へのアプローチを身につけるお手伝いをします、[cite: 3]", "note": "develop an approach は「アプローチ（対処法・研究方法）を徐々に形成する、身につける」。mindful はマインドフルネスの形容詞形で「（今この瞬間に）意識が向いている、細心を払った、自覚的な」。[cite: 3]"},
+ {"en": "that will focus on letting go of our round-the-clock relationship to them.", "jp": "それは、デバイスとの『四六時中（24時間ぶっ通し）の関係』を手放すことに焦点を当てたアプローチです。[cite: 3]", "note": "let go of [something] は「〜を手放す、〜への執着を取り除く」というマインドフルネスの最重要表現。round-the-clock は「24時間ぶっ通しの、四六時中の、昼夜兼行の」という形容詞。[cite: 3]"},
+ {"en": "At the end of this episode, I'll guide you through a wind-down", "jp": "このエピソードの最後に、リラックスのためのウインドダウン（心を落ち着かせるプロセス）を私が指導します、[cite: 3]", "note": "guide [someone] through [something] は「（手順やプロセスに沿って）〜を案内する、手取り足取り指導する」。wind-down（名詞）は、活動状態からリラックスした睡眠状態へ「徐々にギアを落として落ち着く時間・リラクゼーション」を指します。[cite: 3]"},
+ {"en": "so you can start the process of resetting that relationship.", "jp": "それによって、あなたが（デバイスとの）関係をリセットするプロセスを始められるようにするものです。[cite: 3]", "note": ""},
+ {"en": "Hi. I'm Eve, and I'll be your guide on a journey to better sleep.", "jp": "こんにちは。私はイヴ、より良い睡眠への旅のガイドを務めます。[cite: 3]", "note": ""},
+ {"en": "There's no denying that technology has made our lives easier,", "jp": "テクノロジーが私たちの生活をより簡単（便利）にし、[cite: 3]", "note": "There's no denying that... は「〜ということは否定できない、言うまでもなく〜である」という、客観的事実を提示する中級の洗練された重要構文。[cite: 3]"},
+ {"en": "more efficient, and more fun.", "jp": "より効率的に、そしてより楽しくしてくれたことは否定できません。[cite: 3]", "note": "efficient（エフィシェント）は「効率的な、能率的な」。[cite: 3]"},
+ {"en": "But at what cost?", "jp": "しかし、その代償は何でしょうか？[cite: 3]", "note": "at what cost? は「どれほどの犠牲を払って？」「何の代償として？」と、便利さの裏にある重大な損失を問いかけるドラマチックな定番フレーズ。[cite: 3]"},
+ {"en": "As we're increasingly tethered to our devices,", "jp": "私たちがますますデバイスに縛り付けられ、[cite: 3]", "note": "be tethered to [something] の tether（テザー）は、元々「（牛や馬などの動物をつなぎとめる）つなぎ縄、鎖」を意味する名詞・動詞。そこから転じて「〜に縛り付けられている、束縛されている」という意味になり、スマホ依存を語る際の現代英語のキーワードとなっています。increasingly は「ますます、だんだんと」。[cite: 3]"},
+ {"en": "checking emails, obsessing over social media, tracking our sleep,", "jp": "メールのチェックに追われ、SNSの動向に一喜一憂し（頭がいっぱいになり）、睡眠を記録する中で、[cite: 3]", "note": "obsess over [something] は「〜のことで頭がいっぱいになる、〜に異常に執着する、一喜一憂する」。スマホを常に気にする強迫観念を表すのに最適な表現です。track は「（データの推移などを）追跡する、記録する」。[cite: 3]"},
+ {"en": "technology has gotten really good at keeping us awake.", "jp": "テクノロジーは、私たちを起こし続けることが本当に得意になってしまいました。[cite: 3]", "note": "get good at [something / -ing] は「〜が上手になる、上達する」。[cite: 3]"},
+ {"en": "But, as we know, life wasn't always so complicated.", "jp": "しかし、ご存知の通り、人生は昔からこのように複雑だったわけではありません。[cite: 3]", "note": ""},
+ {"en": "When we slept and for how long followed seasonal changes.", "jp": "私たちがいつ、どれくらい眠るかは、季節の変化に従っていました。[cite: 3]", "note": "\"When we slept and for how long\"（いつ、どのくらいの長さ眠るか）という名詞節全体が主語（S）であり、followed が動詞（V）です。主語全体の動きが季節の移り変わりに連動していたことを示す美しい英文です。[cite: 3]"},
+ {"en": "The only pressure to wake up for work came from the sun.", "jp": "仕事のために起きるという唯一のプレッシャー（強制力）は、太陽からもたらされていました。[cite: 3]", "note": ""},
+ {"en": "Some experts believe that the Industrial Revolution", "jp": "一部の専門家は、産業革命こそが（睡眠パターンを変えたと考えています）、[cite: 3]", "note": "Industrial Revolution は「産業革命」。[cite: 3]"},
+ {"en": "was responsible for radically altering our sleep patterns.", "jp": "私たちの睡眠パターンを根本的に変えてしまった原因である、と。[cite: 3]", "note": "be responsible for [something / -ing] は「〜に責任がある、〜の原因である」。radically は「根本的に、劇的に、急進的に」。alter は「（部分的に、しかし本質を）変える、変更する」。[cite: 3]"},
+ {"en": "All of a sudden, people were able to work around the clock", "jp": "突如として、人々は四六時中（昼夜を問わず）働くことができるようになりました、[cite: 3]", "note": "All of a sudden は「突然、不意に、出し抜けに」（suddenly のより口語的で生き生きとした表現）。around the clock は、先述の round-the-clock と同じく「時計をぐるりと一周＝24時間ぶっ通しで、不眠不休で」という意味。[cite: 3]"},
+ {"en": "with the aid of artificial oil and gas lamps.", "jp": "人工のオイルランプやガス灯の助けを借りて。[cite: 3]", "note": "with the aid of [something] は「〜の助け（援助）を借りて、〜を用いて」。artificial（アーティフィシャル）は「人工の、模造の」（対義語：natural）。[cite: 3]"},
+ {"en": "In 1879, Thomas Edison invented the incandescent light bulb.", "jp": "1879年、トーマス・エジソンが白熱電球を発明しました。[cite: 3]", "note": "incandescent light bulb は「白熱電球」（incandescent は「白熱光を発する、まばゆく光る」）。[cite: 3]"},
+ {"en": "It seems to have had a tremendous impact on our circadian rhythm.", "jp": "それは、私たちの概日リズム（体内時計）に途方もない影響を与えたようです。[cite: 3]", "note": "seem to have + 過去分詞 は「（過去に）〜したようだ、〜だったと思われる」という、過去の出来事に対する現在の推量表現（中級最重要文法）。tremendous は「凄まじい、途方もない、非常に大きい」。circadian rhythm（サーカディアン・リズム）は「概日（がいじつ）リズム＝約24時間周期の生物学的体内時計」。[cite: 3]"},
+ {"en": "That's the body's natural cycle that tells us when to sleep and when to wake.", "jp": "それは、いつ眠り、いつ起きるべきかを私たちに教えてくれる、身体の自然なサイクルです。[cite: 3]", "note": ""},
+ {"en": "But more importantly,", "jp": "しかし、さらに重要なことに、[cite: 3]", "note": ""},
+ {"en": "this artificial lighting was the means for a much longer workday,", "jp": "この人工照明は、労働時間を大幅に長引かせる手段（道具）となり、[cite: 3]", "note": "ここでの means は「手段、方法、道具」という意味の単複同形の単数名詞（直前に the または a がつきます）。単語の語尾に 's' がついていますが単数扱いされます。[cite: 3]"},
+ {"en": "which quickly changed our attitudes towards sleep.", "jp": "それが、私たちの睡眠に対する姿勢を急速に変えてしまいました。[cite: 3]", "note": "関係代名詞 which の非制限用法（, which）。直前の出来事全体（人工照明のせいで労働時間が大幅に伸びたこと）を受けて、「そしてそれが、睡眠に対する人々の考え方（attitudes）を変えた」と繋いでいます。[cite: 3]"},
+ {"en": "Since then,", "jp": "それ以来、[cite: 3]", "note": ""},
+ {"en": "our sleep patterns have continued to go through a roller coaster of changes.", "jp": "私たちの睡眠パターンは、まるでローラーコースター（ジェットコースター）のような激しい変化を経験し続けています。[cite: 3]", "note": "go through は「（苦難や激しい変化などを）経験する、経る」。a roller coaster of [something] は「（ジェットコースターのように）アップダウンの激しいもの、二転三転するもの」を指す表現。[cite: 3]"},
+ {"en": "The rise of modern technology", "jp": "現代テクノロジーの台頭が、[cite: 3]", "note": ""},
+ {"en": "set the course for even more disruptions to our natural sleep cycles.", "jp": "私たちの自然な睡眠サイクルに対して、さらなる混乱（妨害）をもたらす道筋を決定づけました。[cite: 3]", "note": "The rise of... は「〜の台頭、発生、台頭」。set the course for [something] は「〜への針路を定める、〜に方向性を与える」。disruption は「（秩序や活動などの）中断、崩壊、大混乱、妨害」。[cite: 3]"},
+ {"en": "It used to be that the primary source of blue light was from the sun,", "jp": "かつては、ブルーライトの主要な光源（供給源）は太陽からだけでした、[cite: 3]", "note": "It used to be that... は「かつては〜だったものだ（今はそうではない）」という、過去の恒常的な状態を表す重要構文。primary source は「主要な供給源、大もとの源」。[cite: 3]"},
+ {"en": "but now we can find it all around us", "jp": "しかし今や、私たちはそれを自分の身の回りのいたるところに見つけることができます、[cite: 3]", "note": ""},
+ {"en": "by way of TVs, computers, and, yes, our handheld devices.", "jp": "テレビやコンピューター、そしてもちろん、手持ちのモバイルデバイスを経由して。[cite: 3]", "note": "by way of は「〜を経由して、〜という方法で、〜の形で」。handheld device は「（スマホなどの）手持ち式の（携帯）デバイス」。[cite: 3]"},
+ {"en": "And they keep us constantly connected to our waking lives.", "jp": "そしてそれらは、起きている状態（日常生活）へと私たちを絶えず接続し続けます。[cite: 3]", "note": "keep [someone] connected は「（人を）接続された状態に維持する」。waking life は「（夢の世界や睡眠状態に対する）起きている現実の生活」。常に情報が入ってくるため、脳が「起きている現実モード」からログアウトできなくなっている状態を指します。[cite: 3]"},
+ {"en": "Even after we turn off the bedside lamp,", "jp": "枕元のランプの明かりを消した後でさえ、[cite: 3]", "note": ""},
+ {"en": "we often lie in bed with our glowing screens just a nose length away from our eyeballs,", "jp": "私たちはしばしば、光る画面を目玉（網膜）からわずか『鼻の長さほど（鼻先）』の位置に近づけて、ベッドに横たわっています。[cite: 3]", "note": "with [noun] [adjective/prepositional phrase] は「付帯状況の with」。「画面を〜な状態にして」という意味。a nose length away from は「鼻の長さだけ離れて＝目と鼻の先、非常に近い距離に」という、イヴのユーモラスでリアルな描写。eyeball は「眼球、目玉」。[cite: 3]"},
+ {"en": "and the bright light can disrupt the crucial transition from wakefulness to sleepiness.", "jp": "そしてその明るい光が、覚醒から眠気への『極めて重要な移行（移行プロセス）』を妨げてしまうのです。[cite: 3]", "note": "crucial transition は「極めて重要な移行（過渡期）」。wakefulness は「覚醒状態」（目が冴えていること）、sleepiness は「眠気」。[cite: 3]"},
+ {"en": "Normally, levels of melatonin,", "jp": "通常、メラトニン（の分泌レベル）は、[cite: 3]", "note": ""},
+ {"en": "a naturally secreted hormone released with the onset of darkness,", "jp": "暗闇の訪れとともに放出される、体内で自然に分泌されるホルモンですが、[cite: 3]", "note": "secrete（シクリート）は「（ホルモンなどを）分泌する」という医学・生物学用語で、ここでは naturally secreted（自然に分泌された）と過去分詞で hormone を修飾しています。with the onset of [something] は「〜の始まり、到来とともに」（onset は特に病気や季節、暗闇など、好ましくない、または自然界の事象の「始まり」に使われます）。[cite: 3]"},
+ {"en": "rise an hour or two before bedtime,", "jp": "就寝時間の1、2時間前に上昇し、[cite: 3]", "note": ""},
+ {"en": "signaling to our bodies that it's time to sleep.", "jp": "私たちの身体に「そろそろ眠る時間ですよ」という合図を送ります。[cite: 3]", "note": "signal to [someone] that... は「〜に…という合図（シグナル）を送る」。it's time to [verb] は「〜する時間だ」。[cite: 3]"},
+ {"en": "When we're immersed in that steady stream of photon-filled blue light from our devices,", "jp": "私たちが、デバイスから放たれる『光子（フォトン）に満ちたブルーライト』の絶え間ない流れを全身に浴びている（浸っている）とき、[cite: 3]", "note": "be immersed in は「〜に浸る、没頭する、浴びる」。steady stream of [something] は「〜の絶え間ない流れ」。photon-filled の photon は物理用語の「光子（こうし）」。強烈な青い光が目に入り込んでいる様子を科学的に表現しています。[cite: 3]"},
+ {"en": "melatonin production is suppressed,", "jp": "メラトニンの生成が抑制され、[cite: 3]", "note": "suppress（サプレス）は「（感情、分泌、反乱などを）抑制する、力ずくで抑え込む」。睡眠ガイドで最も重要な医学単語の一つです。[cite: 3]"},
+ {"en": "and the light tells our brain, \"Awake mode on.\"", "jp": "その光が、私たちの脳に『覚醒モード、オン』と命令するのです。[cite: 3]", "note": ""},
+ {"en": "One study found that people who use devices like iPads before bed", "jp": "ある研究によると、就寝前にiPadのようなデバイスを使用する人々は、[cite: 3]", "note": ""},
+ {"en": "had more disrupted sleep patterns", "jp": "より乱れた睡眠パターンを示し、[cite: 3]", "note": ""},
+ {"en": "and were less rested in the morning compared to those who read physical books.", "jp": "物理的な本（紙の書籍）を読む人々と比べて、朝の疲れの取れ具合が低かった（すっきり起きていなかった）ことが分かりました。[cite: 3]", "note": "less rested は rested（十分に休息が取れてリフレッシュした状態）の度合いが低い＝「十分に休息できていない、疲れが残っている」。physical book は電子書籍（e-book）に対する「紙の実態のある本」。[cite: 3]"},
+ {"en": "This is because the blue light from our devices radiates directly into our eyes.", "jp": "これは、デバイスのブルーライトが私たちの目にダイレクトに（直接的に）照射されるためです。[cite: 3]", "note": "radiate は「（光や熱が）放射される、照射する、四方に放たれる」。[cite: 3]"},
+ {"en": "Those who use devices also had shorter REM sleep,", "jp": "また、デバイスを使用する人々は、レム（REM）睡眠の時間も短くなっていました、[cite: 3]", "note": ""},
+ {"en": "which is an important phase of sleep that helps consolidate memories.", "jp": "レム睡眠とは、記憶を整理して定着させるのを助ける、睡眠の重要な段階（フェーズ）です。[cite: 3]", "note": "phase of sleep は「睡眠の段階、局面」。consolidate（コンソリデイト）は「（記憶や立場などを）固める、整理統合する、定着させる」という重要中上級語。脳科学での memory consolidation（記憶の固定・定着）を指します。[cite: 3]"},
+ {"en": "So what about blue-light-blocking glasses? Could they help?", "jp": "では、ブルーライトカット（遮断）メガネはどうでしょう？ 効果はあるのでしょうか？[cite: 3]", "note": "blue-light-blocking glasses は「ブルーライトを遮断（カット）するメガネ」。[cite: 3]"},
+ {"en": "Well, some medical professionals say the problem isn't blue light.", "jp": "実は、一部の医療専門家は、問題の本質はブルーライトそのものではないと言っています。[cite: 3]", "note": "medical professional は「医療従事者、医療の専門家」。[cite: 3]"},
+ {"en": "It's how to best use our devices.", "jp": "それは、私たちのデバイスを『どのように使うのがベストか』という（使い方の）問題なのです。[cite: 3]", "note": ""},
+ {"en": "Switching to the warmer, dimmer night mode might help", "jp": "より温かみのある、少し暗い『ナイトモード（夜間モード）』に切り替えることは、効果があるかもしれません、[cite: 3]", "note": "dimmer は dim（薄暗い、光が弱い）の比較級。[cite: 3]"},
+ {"en": "because it limits exposure to too much light close to bedtime.", "jp": "なぜなら、就寝時間近くに過剰な光を浴びる（曝露される）のを制限してくれるからです。[cite: 3]", "note": "exposure to [something] は「〜に晒されること、曝露（ばくろ）、接触」。close to bedtime は「就寝時間の近くに、寝る直前に」。[cite: 3]"},
+ {"en": "And there may be other factors at play as well.", "jp": "そして、そこには他にも作用している要因（ファクター）があるかもしれません。[cite: 3]", "note": "factors at play の at play は「（力や要因などが）作用している、影響を及ぼしている」という意味の極めて実用的な中上級表現。[cite: 3]"},
+ {"en": "When we take our devices into bed and see new \"likes\" on a picture we just posted", "jp": "デバイスをベッドに持ち込んで、投稿したばかりの写真に新しい「いいね！」がついているのを目にしたり、[cite: 3]", "note": "take [something] into bed は「〜をベッドの中に持ち込む」。[cite: 3]"},
+ {"en": "or a new text from a friend,", "jp": "あるいは友人からの新しいメッセージ（テキスト）を見つけたりしたとき、[cite: 3]", "note": ""},
+ {"en": "this causes the release of another chemical in our brains,", "jp": "これが、私たちの脳内である『別の化学物質』の放出を引き起こします。[cite: 3]", "note": ""},
+ {"en": "dopamine.", "jp": "それが、ドーパミンです。[cite: 3]", "note": ""},
+ {"en": "Dopamine makes us feel happy,", "jp": "ドーパミンは私たちに幸福感をもたらし、[cite: 3]", "note": ""},
+ {"en": "and it triggers the reward system in our brain,", "jp": "そして私たちの脳内の『報酬系』を刺激（トリガー）します、[cite: 3]", "note": "trigger は名詞で「引き金」、動詞として「〜を引き起こす、誘発する、刺激する」。reward system は脳科学用語の「報酬系（欲求が満たされたときに快感をもたらす脳の神経系）」。[cite: 3]"},
+ {"en": "making it really hard to quit that device.", "jp": "そのせいが、デバイスを使用するのをやめることを本当に困難にさせているのです。[cite: 3]", "note": "making it really hard to... は 無生物主語構文・分詞構文 が伴うレトリック。「（ドーパミンが報酬系を刺激し、そして）それが、デバイスを辞めることを非常に難しくさせている」。ここでの it は形式目的語であり、真の目的語は後ろの to quit that device です。[cite: 3]"},
+ {"en": "And if you think it's hard for adults,", "jp": "そして、もしこれが大人にとって難しいと思うなら、[cite: 3]", "note": ""},
+ {"en": "it's even harder for some teens,", "jp": "一部のティーン（10代の若者）にとっては、さらに（なおさら）困難なことです。[cite: 3]", "note": "even harder は、比較級 harder を even（さらに、なおさら）で強調した表現。[cite: 3]"},
+ {"en": "who may lack the self-control to stop the obsessive behavior of checking devices.", "jp": "なぜなら、若者たちはデバイスをチェックするという『強迫的な（やめられない）行動』をストップするための自己コントロール力（自制心）に欠けている場合があるからです。[cite: 3]", "note": "lack は動詞で「〜を欠いている、〜が足りない」。self-control は「自制心、自己管理能力」。obsessive behavior は「強迫的な行動、取り憑かれたような行動」（頭でやめようと思っても、無意識に何度もスマホを手にとって画面を更新してしまう中毒的な状態を指します）。[cite: 3]"},
+ {"en": "So, what are some things we can do to fix this dilemma?", "jp": "では、このジレンマを解決するために、私たちができること（いくつかの方法）には何があるでしょうか？[cite: 3]", "note": "dilemma（ディレマ）は「板挟み、ジレマ」。便利さを享受することと、安眠を守ることの葛藤を指しています。[cite: 3]"},
+ {"en": "First, it's good to remember", "jp": "まず、次のことを覚えておくと良いでしょう、[cite: 3]", "note": ""},
+ {"en": "that technology isn't inherently good or bad,", "jp": "テクノロジー自体は、本質的に『良い』ものでも『悪い』ものでもない、ということです。[cite: 3]", "note": "inherently（インヘアレントリー）は「本質的に、生得的に、そもそも」。テクノロジーはただの道具であり、本質的な善悪はないという冷静で建設的なマインドセット。[cite: 3]"},
+ {"en": "so it's really up to us how we use it.", "jp": "ですから、それを私たちがどう使うかは、本当に私たち次第なのです。[cite: 3]", "note": "be up to [someone] は「〜次第である、〜にかかっている、〜の責任である」という、日常会話でこれ以上ないほど頻出する定番の中級熟語。[cite: 3]"},
+ {"en": "And that's an empowering idea.", "jp": "そして、それは（自分の力でコントロールできるという）勇気を与えてくれる素晴らしい考え方です。[cite: 3]", "note": "empowering（エンパワリング）は、動詞 empower（〜に権利・力を与える、自立を促す）から派生した形容詞で、「人を元気づける、やる気を起こさせる、可能性を広げてくれる」という意味。ポジティブな自己改善の文脈で非常によく使われます。[cite: 3]"},
+ {"en": "This isn't just about getting better sleep.", "jp": "これは単に、より良い睡眠を得ることだけの問題ではありません。[cite: 3]", "note": ""},
+ {"en": "It's about forming healthier habits with our devices too.", "jp": "私たちのデバイスとの間で、より健全な（健康的な）習慣を形成することでもあるのです。[cite: 3]", "note": "form habits は「習慣を形成する、習慣を作る」。[cite: 3]"},
+ {"en": "Changing how we use our devices is a good first step.", "jp": "デバイスの使い方を変えることは、良い第一歩になります。[cite: 3]", "note": ""},
+ {"en": "Maybe try dusting off that old alarm clock.", "jp": "例えば、あの古い目覚まし時計の『埃を払って（久しぶりに引っ張り出して）』使ってみるのも良いかもしれません。[cite: 3]", "note": "dust off は、長年使わずにしまってあったものの「埃を払う、久しぶりに再利用する」という意味の実用口語表現。スマホを寝室から排除し、古いアラーム時計を使うことの提案。[cite: 3]"},
+ {"en": "And if you're not already doing this, try putting your phone on Do Not Disturb.", "jp": "そして、もしあなたがまだ実行していないのなら、携帯電話を『おやすみモード（Do Not Disturb）』に設定してみてください。[cite: 3]", "note": "Do Not Disturb は、ホテルなどでドアノブにかける「起こさないでください（邪魔しないでください）」の札から転じて、スマートフォンなどの「おやすみモード（着信拒否・通知オフ機能）」の英語名称です。[cite: 3]"},
+ {"en": "Makes a big difference in the quality of your sleep.", "jp": "（その簡単な設定だけで）あなたの睡眠の質に、非常に大きな違い（改善）をもたらしてくれます。[cite: 3]", "note": "make a big difference in... は「〜において劇的な違い（変化）をもたらす、大きく影響する」という最重要表現。主語が省略されており、直前の \"putting your phone on Do Not Disturb\" を指しています。[cite: 3]"},
+ {"en": "And when you are using a device before bed,", "jp": "また、寝る前にどうしてもデバイスを使用する（使う必要がある）ときは、[cite: 3]", "note": ""},
+ {"en": "use it in a way that can help you get to sleep.", "jp": "あなたが眠りにつく（眠りの状態に入る）のを助けてくれるような方法で使用してください。[cite: 3]", "note": "get to sleep は、活動状態からリラックスして「寝つく、眠りに入る」というプロセスを表す言葉（sleep単体は「眠っている状態」を表すため区別されます）。[cite: 3]"},
+ {"en": "For example,", "jp": "例えば、[cite: 3]", "note": ""},
+ {"en": "try listening to some soothing music,", "jp": "心が安らぐ（心地よい）音楽を聞いてみたり、[cite: 3]", "note": "soothing（スージング）は「（痛みや不安、音などを）和らげる、なだめる、心が安らぐ」。[cite: 3]"},
+ {"en": "or use it to listen to a sleep wind-down or sleepcast", "jp": "あるいは、リラックスのための「スリープ・ウインドダウン」や「スリープキャスト（安眠ラジオ）」を聞くために使ったり、[cite: 3]", "note": "sleepcast は、マインドフルネスアプリ（Headspace等）が提供している、心地よい自然音や穏やかなナレーションで構成された安眠用の物語・音声コンテンツのこと。[cite: 3]"},
+ {"en": "to help you relax and guide you towards sleep.", "jp": "心身をリラックスさせ、あなたを眠りへと優しく導くために（デバイスを）利用するのです。[cite: 3]", "note": ""},
+ {"en": "This nightly ritual can be one of the most effective ways to help us fall asleep", "jp": "この『夜の儀式（就寝前のルーティン）』は、私たちが眠りに落ちるのを助ける、最も効果的な方法の一つになり得ます、[cite: 3]", "note": "nightly ritual の ritual（リチュアル）は、元々は宗教的な「儀式」を意味しますが、ライフスタイルやウェルネスの文脈では「就寝前や朝などの（心を整えるための）お決まりのルーティン」を指します。effective は「効果的な、有効な」。[cite: 3]"},
+ {"en": "simply by focusing our attention on being mindful of the present moment.", "jp": "単に、私たちの注意を「今この瞬間」にマインドフルに（意識を集中して）向けることによって。[cite: 3]", "note": "focus one's attention on [something / -ing] は「注意を〜に集中させる」。being mindful of the present moment は「現在この瞬間に対してマインドフルになる（ありのままに意識を向け、雑念を手放す）」という、マインドフルネス瞑想の核心部分を説明した表現です。[cite: 3]"},
+ {"en": "So now, if you are ready for sleep or to relax,", "jp": "さて、それでは、あなたが眠る準備、あるいはリラックスする準備が整いましたら、[cite: 3]", "note": ""},
+ {"en": "let's wind down.", "jp": "心を落ち着かせ、リラックスしていきましょう（ウインドダウンを始めましょう）。[cite: 3]", "note": ""},
+ {"en": "Before you do anything else,", "jp": "他の何をするよりも前に、[cite: 3]", "note": ""},
+ {"en": "I'd just like you to take a moment to get comfortable.", "jp": "まずは、ご自身が最も快適になる（体を楽にする）ための時間を少し取ってください。[cite: 3]", "note": "get comfortable は「（姿勢などを）楽にする、くつろぐ、快適にする」。瞑想を始める際のお決まりのインスピレーション・フレーズです。[cite: 3]"},
+ {"en": "Let's begin the exercise", "jp": "エクササイズを始めましょう、[cite: 3]", "note": ""},
+ {"en": "by lying flat or at a comfortable recline,", "jp": "仰向けに平らに横たわるか、あるいは心地よく寄りかかった（傾斜した）姿勢を取ることで、[cite: 3]", "note": "lying flat は「仰向けにまっすぐ平らに横たわること」。comfortable recline（リクライン）は、ベッドの背もたれに寄りかかって少し上体を傾斜させた、リラックスできる姿勢。[cite: 3]"},
+ {"en": "maybe knees slightly bent, if you'd like,", "jp": "もしよろしければ、膝を少し曲げていただいても構いません、[cite: 3]", "note": "slightly bent は「わずかに（少しだけ）曲げられた」。[cite: 3]"},
+ {"en": "and just enjoying that feeling", "jp": "そして、ただその（快適な）感覚をじっくりと楽しんでください、[cite: 3]", "note": ""},
+ {"en": "of the body letting go,", "jp": "身体が緊張を手放し、[cite: 3]", "note": ""},
+ {"en": "relaxing, and sinking down.", "jp": "リラックスして、下へ（ベッドへと）沈み込んでいく感覚を。[cite: 3]", "note": "sinking down は、重力に完全に身を任せて「ベッドや敷布団に体がじんわりと深く沈み込んでいく」という、瞑想特有の身体感覚を促すイヴの優しいガイドです。[cite: 3]"},
+ {"en": "We're going to begin the exercise", "jp": "エクササイズを開始します、[cite: 3]", "note": ""},
+ {"en": "with a little breathing routine.", "jp": "短い（簡単な）呼吸のルーティンから。[cite: 3]", "note": "breathing routine は「呼吸法、呼吸のエクササイズ（習慣的な一連の動作）」。[cite: 3]"},
+ {"en": "So first,", "jp": "それでは最初に、[cite: 3]", "note": ""},
+ {"en": "just bringing the attention to the breath.", "jp": "ただ、ご自身の「呼吸」へと意識（注意）を向けてみましょう。[cite: 3]", "note": "bring the attention to [something] は「〜に注意を向ける、意識をフォーカスさせる」。主語が省略された誘導指示（分詞構文的な表現）です。[cite: 3]"},
+ {"en": "Just noticing where you feel it.", "jp": "その呼吸を、体のどこで最も強く感じているかに、ただ気づいてみてください。[cite: 3]", "note": "notice は「（五感などを通して）〜に気づく、意識する」。雑念を挟まず、客観的に自分の状態を観察する（マインドフルネスの基本動作）。[cite: 3]"},
+ {"en": "In the nose,", "jp": "鼻の中でしょうか、[cite: 3]", "note": ""},
+ {"en": "the throat,", "jp": "喉のあたりでしょうか、[cite: 3]", "note": ""},
+ {"en": "the chest,", "jp": "胸のあたりでしょうか、[cite: 3]", "note": ""},
+ {"en": "or the diaphragm.", "jp": "あるいは、横隔膜（お腹のあたり）でしょうか。[cite: 3]", "note": "diaphragm（ダイアフラム：発音に注意、'g'は発音されません）は「横隔膜」。腹式呼吸で動くお腹やおへその下あたりの感覚を指しています。[cite: 3]"},
+ {"en": "We're going to be taking a deep breath in for four,", "jp": "これから、4カウント（4秒）かけて深く息を吸い、[cite: 3]", "note": ""},
+ {"en": "holding it for four, and then breathing out for six.", "jp": "4カウント息を止め、そして6カウントかけて細く長く息を吐き出していきます。[cite: 3]", "note": "take a deep breath in で「深く息を吸う」、hold it で「息を止める」、breathe out で「息を吐き出す」。for four / for six は時間の長さ「4秒間 / 6秒間」を表す、瞑想でよく使われる数字表現です。[cite: 3]"},
+ {"en": "So, are you ready?", "jp": "それでは、準備はいいですか？[cite: 3]", "note": ""},
+ {"en": "Let's begin.", "jp": "始めましょう。[cite: 3]", "note": ""},
+ {"en": "Breathing in for four.", "jp": "4カウントで吸い込みます。[cite: 3]", "note": ""},
+ {"en": "…two, three, four.", "jp": "……（吸って）2、3、4。[cite: 3]", "note": ""},
+ {"en": "Hold it for four.", "jp": "4カウント息を止めます。[cite: 3]", "note": ""},
+ {"en": "…two, three, four.", "jp": "……（止めて）2、3、4。[cite: 3]", "note": ""},
+ {"en": "Now breathing out for six.", "jp": "それでは、6カウントでゆっくり吐き出します。[cite: 3]", "note": ""},
+ {"en": "…two, three, four, five, six.", "jp": "……（吐いて）2、3、4、5、6。[cite: 3]", "note": ""},
+ {"en": "And in for four.", "jp": "そして、4カウントで吸って。[cite: 3]", "note": ""},
+ {"en": "…two, three, four.", "jp": "……2、3、4。[cite: 3]", "note": ""},
+ {"en": "Holding it for four.", "jp": "4カウント止めて。[cite: 3]", "note": ""},
+ {"en": "…two, three, four.", "jp": "……2、3、4。[cite: 3]", "note": ""},
+ {"en": "Out for six.", "jp": "6カウントで吐いて。[cite: 3]", "note": ""},
+ {"en": "…two, three, four, five, six.", "jp": "……2、3、4、5、6。[cite: 3]", "note": ""},
+ {"en": "And in for four.", "jp": "吸って。[cite: 3]", "note": ""},
+ {"en": "…two, three, four.", "jp": "……2、3、4。[cite: 3]", "note": ""},
+ {"en": "Holding it for four.", "jp": "止めて。[cite: 3]", "note": ""},
+ {"en": "…two, three, four.", "jp": "……2、3、4。[cite: 3]", "note": ""},
+ {"en": "Out for six.", "jp": "吐いて。[cite: 3]", "note": ""},
+ {"en": "…two, three, four, five, six.", "jp": "……2、3、4、5、6。[cite: 3]", "note": ""},
+ {"en": "In for four.", "jp": "吸って。[cite: 3]", "note": ""},
+ {"en": "…two, three, four.", "jp": "……2、3、4。[cite: 3]", "note": ""},
+ {"en": "Holding for four.", "jp": "止めて。[cite: 3]", "note": ""},
+ {"en": "…two, three, four.", "jp": "……2、3、4。[cite: 3]", "note": ""},
+ {"en": "And out for six.", "jp": "そして、ゆっくり吐いて。[cite: 3]", "note": ""},
+ {"en": "…two, three, four, five, six.", "jp": "……2、3、4、5、6。[cite: 3]", "note": ""},
+ {"en": "Great.", "jp": "素晴らしい。[cite: 3]", "note": ""},
+ {"en": "Now just returning the breath to normal.", "jp": "それでは、呼吸を自然な（普段通りの）リズムに戻してください。[cite: 3]", "note": "return the breath to normal は「呼吸を普通の（力まない自然な）状態に戻す」。ここでの return は「（元の状態に）戻す、返還する」という他動詞的な役割です。[cite: 3]"},
+ {"en": "Now I'd like you to begin", "jp": "それでは、次のステップを始めましょう、[cite: 3]", "note": ""},
+ {"en": "by thinking back to the very first part of the day.", "jp": "今日の『一日の最初の瞬間（朝起きたとき）』を、静かに思い返すことから。[cite: 3]", "note": "think back to [something] は過去の出来事などを遡って思い出す。the very first part の very は形容詞（first）を強調する副詞で、「まさに一番最初の、本当の最初の」という意味。[cite: 3]"},
+ {"en": "It's almost as though you're watching a video fast-forwarding through the day,", "jp": "それはまるで、今日一日のビデオを『早送り』で眺めているかのようです、[cite: 3]", "note": "It's almost as though... は「それはまるで〜であるかのようだ」という仮定の表現。fast-forward は「早送りする」という動詞。[cite: 3]"},
+ {"en": "and you're touching on each of the main things that happened,", "jp": "そして、今日起こった主要な出来事のひとつひとつに軽く触れながら、[cite: 3]", "note": ""},
+ {"en": "reviewing them in your mind's eye.", "jp": "それらを、あなたの『心の目（脳裏）』の中で、思い返して（レビューして）いくのです。[cite: 3]", "note": "touch on は「（特定の話題や出来事に）軽く触れる、言及する」。in your mind's eye は「心の目の中に、脳裏に、想像力の中に」という、文学的かつ瞑想で頻出する美しい英語表現。[cite: 3]"},
+ {"en": "So it might be as simple as getting up,", "jp": "それは、例えば「朝起きる」といった、とてもシンプルなことで構いません、[cite: 3]", "note": ""},
+ {"en": "having breakfast,", "jp": "「朝食を食べる」、[cite: 3]", "note": ""},
+ {"en": "taking a shower,", "jp": "「シャワーを浴びる」、[cite: 3]", "note": ""},
+ {"en": "getting ready for work,", "jp": "「仕事に行く準備をする」、[cite: 3]", "note": "getting ready for [something] は「〜の準備をする、支度をする」。[cite: 3]"},
+ {"en": "starting your work.", "jp": "「仕事を始める」、[cite: 3]", "note": ""},
+ {"en": "Just apply that level of detail", "jp": "その程度（シンプル）の詳細さをもって、[cite: 3]", "note": ""},
+ {"en": "as you visualize or just picture the events of the day.", "jp": "今日一日の出来事をビジュアライズ（視覚化）するか、ただ頭の中に思い描いてみてください。[cite: 3]", "note": "visualizeは視覚化する。pictureも同様に心に思い描く、想像するという動詞。[cite: 3]"},
+ {"en": "So maybe you touch on 20, 25 little moments", "jp": "おそらく、そうして20個か25個ほどの、ちょっとした小さな瞬間を、さらさらと辿り、[cite: 3]", "note": ""},
+ {"en": "that bring you all the way up to the present moment.", "jp": "それがあなたを、今現在のこの瞬間（ present moment ）まで連れ戻して（導いて）くれます。[cite: 3]", "note": "all the way up to... は「〜までずっと、はるばる〜に至るまで」。present moment はマインドフルネスの究極の目的である「現在の瞬間」。[cite: 3]"},
+ {"en": "You're going to repeat this review a couple of times.", "jp": "この（一日の）振り返りを、2、3回繰り返していきましょう。[cite: 3]", "note": "a couple of times は「2、3回、数回」。[cite: 3]"},
+ {"en": "So when you do this each time,", "jp": "繰り返して（振り返って）いくたびに、[cite: 3]", "note": ""},
+ {"en": "you're only going to take about 20 or 30 seconds,", "jp": "かける時間は、わずか20秒か30秒程度にしてください、[cite: 3]", "note": ""},
+ {"en": "briefly going back through the day", "jp": "手短に（今日一日を）もう一度遡り、[cite: 3]", "note": "briefly は「手短に、簡潔に、一時的に」。[cite: 3]"},
+ {"en": "and bringing the mind all the way up to the present moment.", "jp": "そして、あなたの心（意識）を、再びこの現在の瞬間へと連れ戻してくるのです。[cite: 3]", "note": ""},
+ {"en": "And when you've reached the present moment,", "jp": "そして、あなたが現在の瞬間（今ここ）にたどり着いたら、[cite: 3]", "note": ""},
+ {"en": "again, just one deep breath in.", "jp": "もう一度だけ、大きく深く、息を吸い込みます。[cite: 3]", "note": ""},
+ {"en": "As you exhale,", "jp": "そして息を吐き出しながら、[cite: 3]", "note": "exhale は「（息を）吐き出す」。[cite: 3]"},
+ {"en": "again, feeling the body relaxing.", "jp": "再び、ご自身の身体がじんわりと弛緩し、リラックスしていくのを感じてください。[cite: 3]", "note": ""},
+ {"en": "If the mind still feels very active…", "jp": "もし、あなたの心（頭）がまだ非常に活発に（あれこれ考えて）動いているように感じられるなら……[cite: 3]", "note": ""},
+ {"en": "then you can allow the body to continue resting as it is,", "jp": "身体は、今その状態のままで休ませ続けておいて構いません、[cite: 3]", "note": "allow [something] to [verb] は「〜が…するのを許す、〜に…させておく」。as it is は「あるがままに、そのままの状態で」。[cite: 3]"},
+ {"en": "but mentally, slowly", "jp": "しかし、心の中（頭の中）だけで、ゆっくりと、[cite: 3]", "note": "mentally は「精神的に、頭の中で」。[cite: 3]"},
+ {"en": "begin to count backwards", "jp": "逆算して（数を逆に）数え始めてみてください、[cite: 3]", "note": "count backwards は、数を遡って数える、カウントダウンする。[cite: 3]"},
+ {"en": "from a thousand to zero.", "jp": "『1000』から、『0』に向けて。[cite: 3]", "note": ""},
+ {"en": "A very steady pace,", "jp": "非常に一定の（落ち着いた）ペースで、[cite: 3]", "note": "steady pace は「一定のペース、揺るぎない着実なペース」。[cite: 3]"},
+ {"en": "not rushing it.", "jp": "決して（カウントを）急ぐ必要はありません。[cite: 3]", "note": "rush は「急がせる、急いで行う、焦る」。[cite: 3]"},
+ {"en": "Not trying to fall asleep.", "jp": "「眠ろう、眠ろう」と必死に努める必要もありませんよ。[cite: 3]", "note": "Not trying to [verb] の否定表現。焦れば焦るほど逃げていくもの。その「必死さ」を手放し、ただ身を委ねるように、という助言です。[cite: 3]"},
+ {"en": "Just focusing on counting", "jp": "ただ、数を数えることだけに集中してください、[cite: 3]", "note": "focus on [doing / something] は「〜に集中する、焦点を当てる」。[cite: 3]"},
+ {"en": "on one number to the next in reverse.", "jp": "一つの数字から次の数字へと、逆の順番で（淡々と）。[cite: 3]", "note": "in reverse は「あべこべに、逆順に」。[cite: 3]"},
+ {"en": "And knowing that it doesn't really matter too much when sleep comes.", "jp": "そして、いつ眠りが訪れるかは、実は大して問題ではない（どちらでも良い）のだということを知っておいてください。[cite: 3]", "note": "It doesn't really matter too much... は日常会話でも安心感を与える超必須慣用表現。[cite: 3]"},
+ {"en": "But as you lie there in this way,", "jp": "しかし、そうしてあなたがそこにそのように横たわっているだけで、[cite: 3]", "note": ""},
+ {"en": "both the body and the mind", "jp": "身体と心の『両方』が、[cite: 3]", "note": ""},
+ {"en": "are getting all the rest that they need.", "jp": "自身が必要とするすべての休息を（すでに十分に）得ることができているのです。[cite: 3]", "note": "たとえ完全に眠りに落ちていなくても、静かに横たわって呼吸に意識を向けているだけで、心身はすでに回復しているのだ、という心強いマインドフルネスの教えです。[cite: 3]"},
+ {"en": "If you're still awake and want to dive into another sleep topic,", "jp": "もしあなたがまだ起きていて、睡眠に関する別のトピックに飛び込んでみたい（もっと知りたい）なら、[cite: 3]", "note": "dive into [topic] は「（話題や研究、趣味などに）深く飛び込む、没頭する」という生き生きとした中級お役立ち表現。[cite: 3]"},
+ {"en": "check out the next episode in our series,", "jp": "私たちのシリーズの次のエピソード（エピソード3）をチェックしてみてください、[cite: 3]", "note": "check out は「〜をチェックする、見てみる、確認する」。[cite: 3]"},
+ {"en": "where we'll explore the bizarre world of dreams.", "jp": "そこでは、私たちが夢の『奇妙な（不可思議な）世界』を探索（探求）していきます。[cite: 3]", "note": "関係副詞 where の非制限用法。bizarre は「奇妙な、風変わりな、とっぴな」。[cite: 3]"}
+ ];
+
+ // ---- データマイグレーションと初期化 ----
+ const savedEvaluated = localStorage.getItem('sleepguide_2_evaluated');
+ const savedDates = localStorage.getItem('sleepguide_2_dates');
+ const savedSrs = localStorage.getItem('sleepguide_2_srs');
+
+ let evaluatedCards = savedEvaluated ? JSON.parse(savedEvaluated) : new Array(cardsData.length).fill(false);
+ let answerDates = savedDates ? JSON.parse(savedDates) : new Array(cardsData.length).fill(null);
+ 
+ let srsData = savedSrs ? JSON.parse(savedSrs) : new Array(cardsData.length).fill(null).map(() => ({
+ interval: 0,
+ ease: 2.5,
+ repetitions: 0,
+ nextReview: null
+ }));
+
+ let currentCardIndex = 0;
+ let correctCount = evaluatedCards.filter(Boolean).length;
+ let isFront = true;
+ let currentMode = 'all'; 
+
+ const frontSide = document.getElementById('front-side');
+ const backSide = document.getElementById('back-side');
+ const frontEngContent = document.getElementById('front-eng-content');
+ const backEngContent = document.getElementById('back-eng-content');
+ const japContent = document.getElementById('jap-content');
+ const noteContent = document.getElementById('note-content');
+ 
+ const controlsFront = document.getElementById('controls-front');
+ const controlsBack = document.getElementById('controls-back');
+ const progressText = document.getElementById('progress-text');
+ const scoreText = document.getElementById('score-text');
+ const playBtn = document.getElementById('play-audio-btn');
+ const dateBadge = document.getElementById('date-badge');
+ const srsBadge = document.getElementById('srs-badge');
+ const modeIndicator = document.getElementById('mode-indicator');
+
+ function saveProgress() {
+ localStorage.setItem('sleepguide_2_evaluated', JSON.stringify(evaluatedCards));
+ localStorage.setItem('sleepguide_2_dates', JSON.stringify(answerDates));
+ localStorage.setItem('sleepguide_2_srs', JSON.stringify(srsData));
+ }
+
+ function getTodayStringFormatted() {
+ const d = new Date();
+ const y = d.getFullYear();
+ const m = String(d.getMonth() + 1).padStart(2, '0');
+ const day = String(d.getDate()).padStart(2, '0');
+ return `${y}-${m}-${day}`;
+ }
+
+ function addDaysToDate(days) {
+ const d = new Date();
+ d.setDate(d.getDate() + days);
+ const y = d.getFullYear();
+ const m = String(d.getMonth() + 1).padStart(2, '0');
+ const day = String(d.getDate()).padStart(2, '0');
+ return `${y}-${m}-${day}`;
+ }
+
+ function getVisibleIndices() {
+ let indices = [];
+ const today = getTodayStringFormatted();
+ 
+ for (let i = 0; i < cardsData.length; i++) {
+ if (currentMode === 'all') {
+ indices.push(i);
+ } else if (currentMode === 'incorrect') {
+ if (answerDates[i] && !evaluatedCards[i]) indices.push(i);
+ } else if (currentMode === 'review') {
+ if (srsData[i].nextReview && srsData[i].nextReview <= today) {
+ indices.push(i);
+ }
+ }
+ }
+ return indices;
+ }
+
+ function updateUI() {
+ let indices = getVisibleIndices();
+ 
+ if (indices.length === 0) {
+ frontSide.style.display = 'flex';
+ backSide.style.display = 'none';
+ controlsFront.style.display = 'none';
+ controlsBack.style.display = 'none';
+ frontEngContent.innerHTML = "<div class='empty-state'>🎉 このモードの対象カードはありません！<br>上のボタンから別のモードに切り替えてね。</div>";
+ dateBadge.style.display = 'none';
+ srsBadge.style.display = 'none';
+ playBtn.style.display = 'none';
+ progressText.textContent = `- / ${cardsData.length}`;
+ scoreText.textContent = `正解数: ${correctCount}`;
+ return;
+ }
+
+ dateBadge.style.display = 'inline-block';
+ srsBadge.style.display = 'block';
+ playBtn.style.display = 'flex';
+
+ if (!indices.includes(currentCardIndex)) {
+ currentCardIndex = indices[0];
+ }
+
+ let pos = indices.indexOf(currentCardIndex);
+ progressText.textContent = `${pos + 1} / ${indices.length} (全${cardsData.length}問)`;
+ scoreText.textContent = `正解数: ${correctCount}`;
+
+ let dateStr = answerDates[currentCardIndex];
+ dateBadge.textContent = dateStr ? `最終回答日：${dateStr}` : `最終回答日：未回答`;
+
+ let srs = srsData[currentCardIndex];
+ if (srs.nextReview) {
+ srsBadge.textContent = `次回予定日: ${srs.nextReview} (連続正解: ${srs.repetitions}回)`;
+ } else {
+ srsBadge.textContent = `まだSRSに登録されていません`;
+ }
+
+ if (isFront) {
+ frontSide.style.display = 'flex';
+ backSide.style.display = 'none';
+ controlsFront.style.display = 'flex';
+ controlsBack.style.display = 'none';
+ } else {
+ frontSide.style.display = 'none';
+ backSide.style.display = 'flex';
+ controlsFront.style.display = 'none';
+ controlsBack.style.display = 'flex';
+ }
+
+ frontEngContent.textContent = cardsData[currentCardIndex].en;
+ backEngContent.textContent = cardsData[currentCardIndex].en;
+ japContent.textContent = cardsData[currentCardIndex].jp;
+ 
+ if (cardsData[currentCardIndex].note) {
+ noteContent.style.display = 'block';
+ noteContent.textContent = "💡 " + cardsData[currentCardIndex].note;
+ } else {
+ noteContent.style.display = 'none';
+ }
+ }
+
+ function flipCard() {
+ isFront = !isFront;
+ updateUI();
+ }
+
+ function returnToFront() {
+ isFront = true;
+ updateUI();
+ }
+
+ function advanceCard(forward) {
+ let indices = getVisibleIndices();
+ if (indices.length === 0) {
+ updateUI();
+ return;
+ }
+
+ let pos = indices.indexOf(currentCardIndex);
+ 
+ if (pos !== -1) {
+ if (forward) {
+ currentCardIndex = indices[(pos + 1) % indices.length];
+ } else {
+ currentCardIndex = indices[(pos - 1 + indices.length) % indices.length];
+ }
+ } else {
+ let nextIdx = indices.find(i => i > currentCardIndex);
+ currentCardIndex = nextIdx !== undefined ? nextIdx : indices[0];
+ }
+ 
+ isFront = true;
+ updateUI();
+ }
+
+ function nextCard() { advanceCard(true); }
+ function prevCard() { advanceCard(false); }
+
+ function markCorrect() {
+ let wasCorrect = evaluatedCards[currentCardIndex];
+ if (!wasCorrect) {
+ correctCount++;
+ evaluatedCards[currentCardIndex] = true;
+ }
+ answerDates[currentCardIndex] = getTodayStringFormatted();
+
+ let cardSrs = srsData[currentCardIndex];
+ cardSrs.repetitions += 1;
+ 
+ if (cardSrs.repetitions === 1) {
+ cardSrs.interval = 1; 
+ } else if (cardSrs.repetitions === 2) {
+ cardSrs.interval = 6; 
+ } else {
+ cardSrs.interval = Math.round(cardSrs.interval * cardSrs.ease);
+ }
+ cardSrs.nextReview = addDaysToDate(cardSrs.interval);
+
+ saveProgress();
+ nextCard();
+ }
+
+ function markIncorrect() {
+ let wasCorrect = evaluatedCards[currentCardIndex];
+ if (wasCorrect) {
+ correctCount--;
+ evaluatedCards[currentCardIndex] = false;
+ }
+ answerDates[currentCardIndex] = getTodayStringFormatted();
+
+ let cardSrs = srsData[currentCardIndex];
+ cardSrs.repetitions = 0; 
+ cardSrs.interval = 1; 
+ cardSrs.ease = Math.max(1.3, cardSrs.ease - 0.2); 
+ cardSrs.nextReview = addDaysToDate(cardSrs.interval);
+
+ saveProgress();
+ nextCard();
+ }
+
+ function setMode(mode) {
+ currentMode = mode;
+ 
+ const modeNames = {
+ 'all': '📁 全問',
+ 'review': '📅 今日の復習',
+ 'incorrect': '🎯 未正解'
+ };
+ modeIndicator.textContent = `現在のモード：${modeNames[mode]}`;
+
+ let indices = getVisibleIndices();
+ if (indices.length > 0) {
+ currentCardIndex = indices[0];
+ }
+ isFront = true;
+ updateUI();
+ }
+
+ function jumpToUnanswered() {
+ let indices = getVisibleIndices();
+ if (indices.length === 0) return;
+
+ let targetIndex = indices.find(index => !answerDates[index]);
+
+ if (targetIndex !== undefined) {
+ currentCardIndex = targetIndex;
+ } else {
+ currentCardIndex = indices[0];
+ }
+ 
+ isFront = true;
+ updateUI();
+ }
+
+ function speakText() {
+ const textToSpeak = cardsData[currentCardIndex].en;
+ window.speechSynthesis.cancel();
+ const utterance = new SpeechSynthesisUtterance(textToSpeak);
+ utterance.lang = 'en-US';
+ utterance.rate = 0.9;
+ window.speechSynthesis.speak(utterance);
+ }
+
+ playBtn.addEventListener('click', speakText);
+
+ updateUI();
+ </script>
+</body>
+</html>
